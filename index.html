@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨ 家事小幫手 ✨</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #ffecd2;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .stars {
+      text-align: center;
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      color: #764ba2;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 15px;
+      border: 3px solid #667eea;
+      border-radius: 12px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #764ba2;
+    }
+
+    .chore-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .chore-btn {
+      padding: 15px 10px;
+      border: 3px solid #667eea;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .chore-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .chore-btn.selected {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .chore-btn .emoji {
+      display: block;
+      font-size: 2em;
+      margin-bottom: 5px;
+    }
+
+    .chore-btn .points {
+      font-size: 0.8em;
+      color: #666;
+    }
+
+    .chore-btn.selected .points {
+      color: #ffecd2;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.3em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .records-title {
+      color: white;
+      text-align: center;
+      font-size: 1.5em;
+      margin: 30px 0 20px;
+    }
+
+    .record-card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .record-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .record-emoji {
+      font-size: 2.5em;
+    }
+
+    .record-details h3 {
+      color: #764ba2;
+      font-size: 1.2em;
+    }
+
+    .record-details p {
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    .record-points {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .total-points {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .total-points h2 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .total-points .points-display {
+      font-size: 3em;
+      font-weight: bold;
+    }
+
+    .total-points .points-label {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: white;
+      padding: 40px;
+      opacity: 0.8;
+    }
+
+    .empty-state .emoji {
+      font-size: 4em;
+      margin-bottom: 15px;
+    }
+
+    .name-input {
+      text-align: center;
+    }
+
+    .name-input input {
+      text-align: center;
+      font-size: 1.2em;
+      padding: 12px;
+    }
+
+    .celebration {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5em;
+      animation: pop 0.5s ease;
+      z-index: 1000;
+    }
+
+    @keyframes pop {
+      0% { transform: translate(-50%, -50%) scale(0); }
+      50% { transform: translate(-50%, -50%) scale(1.2); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+
+    .clear-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8em;
+      margin-top: 10px;
+    }
+
+    .clear-btn:hover {
+      background: #ee5a5a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✨ 家事小幫手 ✨</h1>
+    <p class="subtitle">幫爸媽做家事，賺星星點數！🌟</p>
+
+    <div class="card">
+      <div class="stars">⭐⭐⭐</div>
+      
+      <div class="form-group name-input">
+        <label>👧👦 你的名字</label>
+        <input type="text" id="childName" placeholder="輸入你的名字" maxlength="20">
+      </div>
+
+      <div class="form-group">
+        <label>🍳 選擇家事項</label>
+        <div class="chore-grid">
+          <button class="chore-btn" onclick="selectChore(this, '洗碗', 10)">
+            <span class="emoji">🍽️</span>
+            洗碗
+            <span class="points">+10</span>
+          </button>
+          <button class="chore-btn" onclick="selectChore(this, '掃地', 10)">
+            <span class="emoji">🧹</span>
+            掃地
+            <span class="points">+10</span>
+          </button>
+          <button class="chore-btn" onclick="selectChore(this, '拖地', 15)">
+            <span class="emoji">💦</span>
+            拖地
+            <span class="points">+15</span>
+          </button>
+          <button class="chore-btn" onclick="selectChore(this, '疊衣服', 10)">
+            <span class="emoji">👕</span>
+            疊衣服
+            <span class="points">+10</span>
+          </button>
+          <button class="chore-btn" onclick="selectChore(this, '倒垃圾', 15)">
+            <span class="emoji">🗑️</span>
+            倒垃圾
+            <span class="points">+15</span>
+          </button>
+          <button class="chore-btn" onclick="selectChore(this, '整理房間', 20)">
+            <span class="emoji">🛏️</span>
+            整理房間
+            <span class="points">+20</span>
+          </button>
+          <button class="chore-btn" onclick="selectChore(this, '澆花', 5)">
+            <span class="emoji">🌱</span>
+            澆花
+            <span class="points">+5</span>
+          </button>
+          <button class="chore-btn" onclick="selectChore(this, '收衣服', 10)">
+            <span class="emoji">👚</span>
+            收衣服
+            <span class="points">+10</span>
+          </button>
+          <button class="chore-btn" onclick="selectChore(this, '擦桌子', 8)">
+            <span class="emoji">🧽</span>
+            擦桌子
+            <span class="points">+8</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitChore()">
+        🌟 完成家事！🌟
+      </button>
+    </div>
+
+    <div class="total-points">
+      <h2>🏆 我的總點數</h2>
+      <div class="points-display" id="totalPoints">0</div>
+      <div class="points-label">顆星星</div>
+    </div>
+
+    <h2 class="records-title">📝 家事紀錄</h2>
+    <div id="recordsContainer">
+      <div class="empty-state">
+        <div class="emoji">🎈</div>
+        <p>還沒有家事記錄～<br>快去幫爸媽做家事吧！</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="celebrationOverlay" class="overlay" style="display:none"></div>
+  <div id="celebration" class="celebration" style="display:none">🎉</div>
+
+  <script>
+    let selectedChore = null;
+    let selectedPoints = 0;
+    let totalPoints = 0;
+    let records = [];
+
+    function selectChore(btn, chore, points) {
+      document.querySelectorAll('.chore-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedChore = chore;
+      selectedPoints = points;
+    }
+
+    function submitChore() {
+      const name = document.getElementById('childName').value.trim();
+      
+      if (!name) {
+        alert('請輸入你的名字喔！👧');
+        return;
+      }
+
+      if (!selectedChore) {
+        alert('請選擇家事項！🍳');
+        return;
+      }
+
+      const record = {
+        name: name,
+        chore: selectedChore,
+        points: selectedPoints,
+        emoji: getEmoji(selectedChore),
+        time: new Date().toLocaleString('zh-TW')
+      };
+
+      records.unshift(record);
+      totalPoints += selectedPoints;
+
+      updateUI();
+      showCelebration();
+
+      // Reset form
+      document.getElementById('childName').value = name;
+      document.querySelectorAll('.chore-btn').forEach(b => b.classList.remove('selected'));
+      selectedChore = null;
+      selectedPoints = 0;
+
+      saveData();
+    }
+
+    function getEmoji(chore) {
+      const emojis = {
+        '洗碗': '🍽️', '掃地': '🧹', '拖地': '💦',
+        '疊衣服': '👕', '倒垃圾': '🗑️', '整理房間': '🛏️',
+        '澆花': '🌱', '收衣服': '👚', '擦桌子': '🧽'
+      };
+      return emojis[chore] || '✅';
+    }
+
+    function updateUI() {
+      document.getElementById('totalPoints').textContent = totalPoints;
+
+      const container = document.getElementById('recordsContainer');
+      
+      if (records.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="emoji">🎈</div>
+            <p>還沒有家事記錄～<br>快去幫爸媽做家事吧！</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = records.map((r, i) => `
+        <div class="record-card" style="animation-delay: ${i * 0.05}s">
+          <div class="record-info">
+            <span class="record-emoji">${r.emoji}</span>
+            <div class="record-details">
+              <h3>${r.chore}</h3>
+              <p>${r.name} · ${r.time}</p>
+            </div>
+          </div>
+          <div>
+            <span class="record-points">+${r.points}</span>
+            <button class="clear-btn" onclick="deleteRecord(${records.indexOf(r)})">刪除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteRecord(index) {
+      totalPoints -= records[index].points;
+      records.splice(index, 1);
+      updateUI();
+      saveData();
+    }
+
+    function showCelebration() {
+      const overlay = document.getElementById('celebrationOverlay');
+      const celebration = document.getElementById('celebration');
+      const emojis = ['🎉', '🌟', '✨', '🏆', '👏', '💪'];
+      
+      overlay.style.display = 'block';
+      celebration.style.display = 'block';
+      celebration.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        celebration.style.display = 'none';
+      }, 800);
+    }
+
+    function saveData() {
+      localStorage.setItem('choresRecords', JSON.stringify({
+        records: records,
+        totalPoints: totalPoints
+      }));
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem('choresRecords');
+      if (saved) {
+        const data = JSON.parse(saved);
+        records = data.records || [];
+        totalPoints = data.totalPoints || 0;
+        updateUI();
+      }
+    }
+
+    // Load saved data on page load
+    loadData();
+  </script>
+</body>
+</html>

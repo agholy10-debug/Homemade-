@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
   <title>✨ 家事小幫手 ✨</title>
   <style>
     * {
@@ -380,12 +381,100 @@
   <div id="celebration" class="celebration" style="display:none">🎉</div>
 
   <script>
+    // ==================== 資安增強 ====================
+    
+    // 允許的白名單字元（中文、英文、數字、空白）
+    const ALLOWED_CHARS = /^[a-zA-Z0-9\u4e00-\u9fff\s]+$/;
+    
+    // 允許的家事項目（防範注入）
+    const ALLOWED_CHORES = ['洗碗', '掃地', '拖地', '疊衣服', '倒垃圾', '整理房間', '澆花', '收衣服', '擦桌子'];
+    
+    /**
+     * 消毒輸入 - 移除所有 HTML/JS 標籤和特殊字元
+     */
+    function sanitizeInput(str) {
+      if (typeof str !== 'string') return '';
+      
+      // 移除 HTML 標籤
+      let clean = str.replace(/<[^>]*>/g, '');
+      
+      // 跳脫 HTML 實體
+      clean = clean
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;');
+      
+      // 移除潛在的 JavaScript 事件處理
+      clean = clean.replace(/on\w+=/gi, '');
+      clean = clean.replace(/javascript:/gi, '');
+      clean = clean.replace(/data:/gi, '');
+      
+      return clean.trim();
+    }
+    
+    /**
+     * 消毒並驗證名字輸入
+     */
+    function sanitizeName(name) {
+      if (typeof name !== 'string') return '';
+      
+      // 移除危險字元
+      let clean = name
+        .replace(/[<>'"&]/g, '')  // 移除危險字元
+        .replace(/\s+/g, ' ')      // 合併空白
+        .trim();
+      
+      // 限制長度
+      if (clean.length > 20) {
+        clean = clean.substring(0, 20);
+      }
+      
+      // 驗證字元（只能有中文、英文、數字、空白）
+      if (!ALLOWED_CHARS.test(clean)) {
+        return '';
+      }
+      
+      return clean;
+    }
+    
+    /**
+     * 驗證家事項目（防止注入）
+     */
+    function validateChore(chore) {
+      return ALLOWED_CHORES.includes(chore);
+    }
+    
+    /**
+     * 驗證點數（防止數字操控）
+     */
+    function validatePoints(points) {
+      const num = parseInt(points, 10);
+      return !isNaN(num) && num > 0 && num <= 100;
+    }
+    
+    /**
+     * 安全地設置文字內容（防止 XSS）
+     */
+    function safeSetText(element, text) {
+      element.textContent = text;
+    }
+    
+    // ==================== 原有功能 ====================
+    
     let selectedChore = null;
     let selectedPoints = 0;
     let totalPoints = 0;
     let records = [];
 
     function selectChore(btn, chore, points) {
+      // 驗證輸入
+      if (!validateChore(chore) || !validatePoints(points)) {
+        console.warn('無效的家事項目');
+        return;
+      }
+      
       document.querySelectorAll('.chore-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       selectedChore = chore;
@@ -393,15 +482,22 @@
     }
 
     function submitChore() {
-      const name = document.getElementById('childName').value.trim();
+      // 消毒名字輸入
+      const rawName = document.getElementById('childName').value;
+      const name = sanitizeName(rawName);
       
       if (!name) {
-        alert('請輸入你的名字喔！👧');
+        alert('請輸入有效的名字喔！👧\n（只能使用中文、英文、數字）');
         return;
       }
 
-      if (!selectedChore) {
+      if (!selectedChore || !validateChore(selectedChore)) {
         alert('請選擇家事項！🍳');
+        return;
+      }
+
+      if (!validatePoints(selectedPoints)) {
+        alert('資料異常，請重新選擇！');
         return;
       }
 
@@ -413,13 +509,18 @@
         time: new Date().toLocaleString('zh-TW')
       };
 
+      // 限制記錄數量（防止 localStorage 過大）
+      if (records.length >= 100) {
+        records.pop();  // 移除最舊的
+      }
+
       records.unshift(record);
       totalPoints += selectedPoints;
 
       updateUI();
       showCelebration();
 
-      // Reset form
+      // 重置表單（保留名字）
       document.getElementById('childName').value = name;
       document.querySelectorAll('.chore-btn').forEach(b => b.classList.remove('selected'));
       selectedChore = null;
@@ -438,7 +539,7 @@
     }
 
     function updateUI() {
-      document.getElementById('totalPoints').textContent = totalPoints;
+      safeSetText(document.getElementById('totalPoints'), totalPoints);
 
       const container = document.getElementById('recordsContainer');
       
@@ -452,28 +553,40 @@
         return;
       }
 
-      container.innerHTML = records.map((r, i) => `
-        <div class="record-card" style="animation-delay: ${i * 0.05}s">
-          <div class="record-info">
-            <span class="record-emoji">${r.emoji}</span>
-            <div class="record-details">
-              <h3>${r.chore}</h3>
-              <p>${r.name} · ${r.time}</p>
+      // 使用 map 而非直接 innerHTML 拼接，更安全
+      let html = '';
+      for (let i = 0; i < records.length; i++) {
+        const r = records[i];
+        // 確保所有輸出都被跳脫
+        const safeChore = sanitizeInput(r.chore);
+        const safeName = sanitizeInput(r.name);
+        const safeTime = sanitizeInput(r.time);
+        
+        html += `
+          <div class="record-card" style="animation-delay: ${i * 0.05}s">
+            <div class="record-info">
+              <span class="record-emoji">${r.emoji}</span>
+              <div class="record-details">
+                <h3>${safeChore}</h3>
+                <p>${safeName} · ${safeTime}</p>
+              </div>
             </div>
-          </div>
-          <div>
-            <span class="record-points">+${r.points}</span>
-            <button class="clear-btn" onclick="deleteRecord(${records.indexOf(r)})">刪除</button>
-          </div>
-        </div>
-      `).join('');
+            <div>
+              <span class="record-points">+${r.points}</span>
+              <button class="clear-btn" onclick="deleteRecord(${i})">刪除</button>
+            </div>
+          </div>`;
+      }
+      container.innerHTML = html;
     }
 
     function deleteRecord(index) {
-      totalPoints -= records[index].points;
-      records.splice(index, 1);
-      updateUI();
-      saveData();
+      if (index >= 0 && index < records.length) {
+        totalPoints -= records[index].points;
+        records.splice(index, 1);
+        updateUI();
+        saveData();
+      }
     }
 
     function showCelebration() {
@@ -492,23 +605,81 @@
     }
 
     function saveData() {
-      localStorage.setItem('choresRecords', JSON.stringify({
-        records: records,
-        totalPoints: totalPoints
-      }));
-    }
-
-    function loadData() {
-      const saved = localStorage.getItem('choresRecords');
-      if (saved) {
-        const data = JSON.parse(saved);
-        records = data.records || [];
-        totalPoints = data.totalPoints || 0;
-        updateUI();
+      try {
+        // 確保資料是乾淨的才儲存
+        const cleanData = {
+          records: records.map(r => ({
+            name: sanitizeInput(r.name),
+            chore: sanitizeInput(r.chore),
+            points: validatePoints(r.points) ? r.points : 0,
+            emoji: sanitizeInput(r.emoji),
+            time: sanitizeInput(r.time)
+          })),
+          totalPoints: validatePoints(totalPoints) ? totalPoints : 0
+        };
+        
+        // 限制 localStorage 大小（最大 1MB）
+        const jsonStr = JSON.stringify(cleanData);
+        if (jsonStr.length > 1024 * 1024) {
+          console.warn('資料量過大，僅保留最新記錄');
+          cleanData.records = cleanData.records.slice(0, 50);
+          cleanData.totalPoints = cleanData.records.reduce((sum, r) => sum + r.points, 0);
+        }
+        
+        localStorage.setItem('choresRecords', JSON.stringify(cleanData));
+      } catch (e) {
+        console.error('儲存失敗:', e);
       }
     }
 
-    // Load saved data on page load
+    function loadData() {
+      try {
+        const saved = localStorage.getItem('choresRecords');
+        if (saved) {
+          const data = JSON.parse(saved);
+          
+          // 驗證資料結構
+          if (Array.isArray(data.records)) {
+            // 消毒並驗證每一筆記錄
+            records = data.records
+              .filter(r => validateChore(r.chore) && validatePoints(r.points))
+              .map(r => ({
+                name: sanitizeInput(r.name || ''),
+                chore: r.chore,
+                points: r.points,
+                emoji: sanitizeInput(r.emoji || ''),
+                time: sanitizeInput(r.time || '')
+              }));
+          }
+          
+          // 驗證總點數
+          totalPoints = validatePoints(data.totalPoints) ? data.totalPoints : 0;
+          
+          updateUI();
+        }
+      } catch (e) {
+        console.error('讀取失敗:', e);
+        // 資料損壞時清除
+        localStorage.removeItem('choresRecords');
+      }
+    }
+
+    // 防止過快點擊（防範機器人）
+    let lastSubmitTime = 0;
+    const SUBMIT_COOLDOWN = 1000; // 1秒冷卻
+
+    const originalSubmit = submitChore;
+    submitChore = function() {
+      const now = Date.now();
+      if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+        alert('操作太頻繁，請稍等一下！😅');
+        return;
+      }
+      lastSubmitTime = now;
+      originalSubmit();
+    };
+
+    // 頁面載入時恢復資料
     loadData();
   </script>
 </body>

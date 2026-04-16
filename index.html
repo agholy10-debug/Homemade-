@@ -224,7 +224,23 @@
       font-weight: bold;
     }
 
-    .total-points .points-label {
+    .stats-btn {
+      margin-top: 15px;
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      width: 100%;
+    }
+
+    .stats-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
       font-size: 1.2em;
       opacity: 0.9;
     }
@@ -366,6 +382,20 @@
       <h2>🏆 我的總點數</h2>
       <div class="points-display" id="totalPoints">0</div>
       <div class="points-label">顆星星</div>
+      <button class="stats-btn" id="statsBtn" onclick="showStats()">📊 查看統計</button>
+    </div>
+
+    <!-- 統計 Modal -->
+    <div id="statsModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:2000;overflow-y:auto;">
+      <div style="max-width:600px;margin:20px auto;padding:20px;">
+        <div style="background:white;border-radius:20px;padding:25px;max-height:80vh;overflow-y:auto;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h2 style="color:#764ba2;">📊 家事統計</h2>
+            <button onclick="hideStats()" style="background:#ff6b6b;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:1.2em;">✕</button>
+          </div>
+          <div id="statsContent"></div>
+        </div>
+      </div>
     </div>
 
     <h2 class="records-title">📝 家事紀錄</h2>
@@ -681,6 +711,102 @@
 
     // 頁面載入時恢復資料
     loadData();
+    
+    // ==================== 統計功能 ====================
+    
+    function showStats() {
+      const modal = document.getElementById('statsModal');
+      const content = document.getElementById('statsContent');
+      
+      if (records.length === 0) {
+        content.innerHTML = `
+          <div style="text-align:center;padding:40px;color:#666;">
+            <div style="font-size:4em;">📭</div>
+            <p style="margin-top:15px;">目前沒有家事記錄</p>
+          </div>
+        `;
+      } else {
+        // 統計每個人
+        const userStats = {};
+        records.forEach(r => {
+          if (!userStats[r.name]) {
+            userStats[r.name] = { points: 0, count: 0 };
+          }
+          userStats[r.name].points += r.points;
+          userStats[r.name].count += 1;
+        });
+        
+        // 排序
+        const sorted = Object.entries(userStats)
+          .map(([name, stats]) => ({ name, ...stats }))
+          .sort((a, b) => b.points - a.points);
+        
+        // 各家事統計
+        const choreStats = {};
+        records.forEach(r => {
+          choreStats[r.chore] = (choreStats[r.chore] || 0) + 1;
+        });
+        
+        content.innerHTML = `
+          <div style="margin-bottom:25px;">
+            <h3 style="color:#764ba2;margin-bottom:15px;">🏆 點數排行榜</h3>
+            ${sorted.map((user, i) => `
+              <div style="display:flex;align-items:center;padding:12px;background:${i===0?'#fff8e1':i===1?'#f5f5f5':i===2?'#fef3e2':'#f8f8f8'};border-radius:12px;margin-bottom:8px;">
+                <div style="width:35px;height:35px;background:${i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':'#667eea'};color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;margin-right:12px;">${i+1}</div>
+                <div style="flex:1;">
+                  <div style="font-weight:bold;">${user.name}</div>
+                  <div style="font-size:0.85em;color:#666;">完成 ${user.count} 次</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:1.4em;font-weight:bold;color:#764ba2;">${user.points}</div>
+                  <div style="font-size:0.8em;color:#666;">點數</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div style="margin-bottom:25px;">
+            <h3 style="color:#764ba2;margin-bottom:15px;">📊 統計摘要</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div style="background:#f8f8f8;padding:15px;border-radius:12px;text-align:center;">
+                <div style="font-size:2em;">📝</div>
+                <div style="font-size:1.5em;font-weight:bold;color:#764ba2;">${records.length}</div>
+                <div style="font-size:0.9em;color:#666;">總記錄</div>
+              </div>
+              <div style="background:#f8f8f8;padding:15px;border-radius:12px;text-align:center;">
+                <div style="font-size:2em;">⭐</div>
+                <div style="font-size:1.5em;font-weight:bold;color:#764ba2;">${totalPoints}</div>
+                <div style="font-size:0.9em;color:#666;">總點數</div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 style="color:#764ba2;margin-bottom:15px;">🍳 各項家事統計</h3>
+            ${Object.entries(choreStats).sort((a,b)=>b[1]-a[1]).map(([chore, count]) => `
+              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;">
+                <span>${chore}</span>
+                <span style="font-weight:bold;color:#764ba2;">${count} 次</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+      
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function hideStats() {
+      const modal = document.getElementById('statsModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    
+    // 點擊背景關閉
+    document.getElementById('statsModal').addEventListener('click', function(e) {
+      if (e.target === this) hideStats();
+    });
   </script>
 </body>
 </html>

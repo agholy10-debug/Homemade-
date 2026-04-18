@@ -365,6 +365,11 @@
             收衣服
             <span class="points">+10</span>
           </button>
+          <button class="chore-btn" onclick="selectChore(this, '買早餐', 10)">
+            <span class="emoji">🥪</span>
+            買早餐
+            <span class="points">+10</span>
+          </button>
           <button class="chore-btn" onclick="selectChore(this, '擦桌子', 8)">
             <span class="emoji">🧽</span>
             擦桌子
@@ -417,7 +422,7 @@
     const ALLOWED_CHARS = /^[a-zA-Z0-9\u4e00-\u9fff\s]+$/;
     
     // 允許的家事項目（防範注入）
-    const ALLOWED_CHORES = ['洗碗', '掃地', '拖地', '疊衣服', '倒垃圾', '整理房間', '澆花', '收衣服', '擦桌子'];
+    const ALLOWED_CHORES = ['洗碗', '掃地', '拖地', '疊衣服', '倒垃圾', '整理房間', '澆花', '收衣服', '擦桌子', '買早餐'];
     
     /**
      * 消毒輸入 - 移除所有 HTML/JS 標籤和特殊字元
@@ -563,7 +568,8 @@
       const emojis = {
         '洗碗': '🍽️', '掃地': '🧹', '拖地': '💦',
         '疊衣服': '👕', '倒垃圾': '🗑️', '整理房間': '🛏️',
-        '澆花': '🌱', '收衣服': '👚', '擦桌子': '🧽'
+        '澆花': '🌱', '收衣服': '👚', '擦桌子': '🧽',
+        '買早餐': '🥪'
       };
       return emojis[chore] || '✅';
     }

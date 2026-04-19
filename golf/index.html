@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏌️ 高爾夫球成績統計</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4ade80;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #9ca3af;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card h2 {
+            color: #4ade80;
+            margin-bottom: 16px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #d1d5db;
+            font-size: 0.9rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4ade80;
+        }
+        
+        .player-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .player-chip {
+            padding: 8px 16px;
+            background: rgba(74, 222, 128, 0.2);
+            border: 1px solid #4ade80;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .player-chip:hover {
+            background: rgba(74, 222, 128, 0.4);
+        }
+        
+        .player-chip.selected {
+            background: #4ade80;
+            color: #1a1a2e;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background: #4ade80;
+            color: #1a1a2e;
+        }
+        
+        .btn-primary:hover {
+            background: #22c55e;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #4ade80;
+            color: #1a1a2e;
+        }
+        
+        .tab:hover:not(.active) {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .score-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .score-info h3 {
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        
+        .score-info p {
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+        
+        .score-value {
+            text-align: right;
+        }
+        
+        .score-value .score {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4ade80;
+        }
+        
+        .score-value .date {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .stat-card .label {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4ade80;
+        }
+        
+        .stat-card .sub {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+        
+        .leaderboard {
+            margin-top: 20px;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .rank {
+            width: 30px;
+            height: 30px;
+            background: #4ade80;
+            color: #1a1a2e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        
+        .rank.gold { background: #fbbf24; }
+        .rank.silver { background: #9ca3af; }
+        .rank.bronze { background: #b45309; }
+        
+        .leaderboard-info {
+            flex: 1;
+        }
+        
+        .leaderboard-info h4 {
+            color: #fff;
+        }
+        
+        .leaderboard-info p {
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+        
+        .leaderboard-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4ade80;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+        }
+        
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: none;
+            color: #ef4444;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .modal h3 {
+            color: #4ade80;
+            margin-bottom: 16px;
+        }
+        
+        .holes-input {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 4px;
+            margin-top: 10px;
+        }
+        
+        .hole-input {
+            width: 100%;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        
+        .total-score {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #4ade80;
+            margin: 16px 0;
+            padding: 12px;
+            background: rgba(74, 222, 128, 0.1);
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .holes-input {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏌️ 高爾夫球成績統計</h1>
+        <p class="subtitle">記錄每一次揮桿的精彩</p>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('record')">📝 記錄成績</div>
+            <div class="tab" onclick="showTab('records')">📊 歷史紀錄</div>
+            <div class="tab" onclick="showTab('stats')">📈 統計數據</div>
+            <div class="tab" onclick="showTab('players')">👥 球友</div>
+        </div>
+        
+        <!-- 記錄成績 -->
+        <div id="tab-record" class="tab-content">
+            <div class="card">
+                <h2>📝 新增成績</h2>
+                <div class="form-group">
+                    <label>日期</label>
+                    <input type="date" id="scoreDate">
+                </div>
+                <div class="form-group">
+                    <label>球場</label>
+                    <input type="text" id="courseName" placeholder="例如：林口高爾夫球場">
+                </div>
+                <div class="form-group">
+                    <label>選擇球友</label>
+                    <div class="player-chips" id="playerChips"></div>
+                </div>
+                <button class="btn btn-secondary" onclick="showAddPlayerModal()">➕ 新增球友</button>
+                <button class="btn btn-primary" onclick="showScoreModal()">📤 記錄成績</button>
+            </div>
+        </div>
+        
+        <!-- 歷史紀錄 -->
+        <div id="tab-records" class="tab-content" style="display:none;">
+            <div class="card">
+                <h2>📊 歷史紀錄</h2>
+                <div id="recordsList"></div>
+            </div>
+        </div>
+        
+        <!-- 統計數據 -->
+        <div id="tab-stats" class="tab-content" style="display:none;">
+            <div class="card">
+                <h2>📈 我的統計</h2>
+                <div class="stats-grid" id="myStats"></div>
+            </div>
+            
+            <div class="card">
+                <h2>🏆 排行榜</h2>
+                <div class="leaderboard" id="leaderboard"></div>
+            </div>
+        </div>
+        
+        <!-- 球友管理 -->
+        <div id="tab-players" class="tab-content" style="display:none;">
+            <div class="card">
+                <h2>👥 球友名單</h2>
+                <div id="playersList"></div>
+                <button class="btn btn-secondary" onclick="showAddPlayerModal()" style="margin-top: 16px;">➕ 新增球友</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新增球友 Modal -->
+    <div class="modal" id="addPlayerModal">
+        <div class="modal-content">
+            <h3>➕ 新增球友</h3>
+            <div class="form-group">
+                <label>球友名稱</label>
+                <input type="text" id="newPlayerName" placeholder="輸入名稱">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button class="btn btn-secondary" onclick="closeModal('addPlayerModal')" style="flex:1;">取消</button>
+                <button class="btn btn-primary" onclick="addPlayer()" style="flex:1;">確認</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 記錄成績 Modal -->
+    <div class="modal" id="scoreModal">
+        <div class="modal-content">
+            <h3>📤 記錄成績</h3>
+            <p id="selectedPlayersText" style="color: #9ca3af; margin-bottom: 16px;"></p>
+            <div id="holesInputContainer"></div>
+            <div class="total-score">總桿數：<span id="totalScore">0</span></div>
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button class="btn btn-secondary" onclick="closeModal('scoreModal')" style="flex:1;">取消</button>
+                <button class="btn btn-primary" onclick="saveScore()" style="flex:1;">儲存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 數據存儲
+        let players = JSON.parse(localStorage.getItem('golfPlayers')) || ['振興'];
+        let scores = JSON.parse(localStorage.getItem('golfScores')) || [];
+        let selectedPlayers = [];
+        
+        // 初始化
+        function init() {
+            document.getElementById('scoreDate').valueAsDate = new Date();
+            renderPlayerChips();
+            renderPlayersList();
+            renderRecords();
+            renderStats();
+            renderLeaderboard();
+        }
+        
+        // 顯示 Tab
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).style.display = 'block';
+            event.target.classList.add('active');
+        }
+        
+        // 渲染球友晶片
+        function renderPlayerChips() {
+            const container = document.getElementById('playerChips');
+            container.innerHTML = players.map(p => `
+                <div class="player-chip ${selectedPlayers.includes(p) ? 'selected' : ''}" 
+                     onclick="togglePlayer('${p}')">${p}</div>
+            `).join('');
+        }
+        
+        // 切換球友選擇
+        function togglePlayer(name) {
+            const idx = selectedPlayers.indexOf(name);
+            if (idx > -1) {
+                selectedPlayers.splice(idx, 1);
+            } else {
+                selectedPlayers.push(name);
+            }
+            renderPlayerChips();
+        }
+        
+        // 顯示新增球友 Modal
+        function showAddPlayerModal() {
+            document.getElementById('newPlayerName').value = '';
+            document.getElementById('addPlayerModal').classList.add('show');
+        }
+        
+        // 新增球友
+        function addPlayer() {
+            const name = document.getElementById('newPlayerName').value.trim();
+            if (!name) {
+                alert('請輸入球友名稱');
+                return;
+            }
+            if (players.includes(name)) {
+                alert('這個球友已經存在了');
+                return;
+            }
+            players.push(name);
+            localStorage.setItem('golfPlayers', JSON.stringify(players));
+            closeModal('addPlayerModal');
+            renderPlayerChips();
+            renderPlayersList();
+        }
+        
+        // 刪除球友
+        function deletePlayer(name) {
+            if (!confirm(`確定要刪除 ${name} 嗎？`)) return;
+            players = players.filter(p => p !== name);
+            selectedPlayers = selectedPlayers.filter(p => p !== name);
+            localStorage.setItem('golfPlayers', JSON.stringify(players));
+            renderPlayerChips();
+            renderPlayersList();
+        }
+        
+        // 渲染球友名單
+        function renderPlayersList() {
+            const container = document.getElementById('playersList');
+            container.innerHTML = players.map(p => `
+                <div class="score-item">
+                    <div class="score-info">
+                        <h3>${p}</h3>
+                    </div>
+                    <button class="delete-btn" onclick="deletePlayer('${p}')">刪除</button>
+                </div>
+            `).join('');
+        }
+        
+        // 顯示成績 Modal
+        function showScoreModal() {
+            if (selectedPlayers.length === 0) {
+                alert('請先選擇至少一位球友');
+                return;
+            }
+            const date = document.getElementById('scoreDate').value;
+            const course = document.getElementById('courseName').value;
+            
+            document.getElementById('selectedPlayersText').textContent = 
+                `${date} @ ${course || '未知球場'}`;
+            
+            // 創建每個球友的成績輸入
+            const container = document.getElementById('holesInputContainer');
+            container.innerHTML = selectedPlayers.map(p => `
+                <div style="margin-bottom: 16px;">
+                    <label style="color: #4ade80;">${p}</label>
+                    <div class="holes-input">
+                        ${Array.from({length: 18}, (_, i) => `
+                            <div>
+                                <div style="font-size:0.7rem;color:#9ca3af;">${i+1}</div>
+                                <input type="number" class="hole-input" 
+                                       id="hole-${p}-${i}" min="1" max="20" value="4"
+                                       onchange="updateTotal('${p}')">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="text-align:right;margin-top:4px;color:#4ade80;">
+                        小計：<span id="subtotal-${p}">72</span> 桿
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('scoreModal').classList.add('show');
+        }
+        
+        // 更新總桿數
+        function updateTotal(playerName) {
+            let total = 0;
+            for (let i = 0; i < 18; i++) {
+                const val = parseInt(document.getElementById(`hole-${playerName}-${i}`)?.value) || 0;
+                total += val;
+            }
+            document.getElementById(`subtotal-${playerName}`).textContent = total;
+            
+            // 更新全部總桿數
+            let grandTotal = 0;
+            selectedPlayers.forEach(p => {
+                for (let i = 0; i < 18; i++) {
+                    const val = parseInt(document.getElementById(`hole-${p}-${i}`)?.value) || 0;
+                    grandTotal += val;
+                }
+            });
+            document.getElementById('totalScore').textContent = grandTotal;
+        }
+        
+        // 儲存成績
+        function saveScore() {
+            const date = document.getElementById('scoreDate').value;
+            const course = document.getElementById('courseName').value;
+            
+            const scoreRecords = selectedPlayers.map(p => {
+                let holes = [];
+                let total = 0;
+                for (let i = 0; i < 18; i++) {
+                    const val = parseInt(document.getElementById(`hole-${p}-${i}`)?.value) || 0;
+                    holes.push(val);
+                    total += val;
+                }
+                return { player: p, date, course: course || '未知球場', holes, total };
+            });
+            
+            scores.push(...scoreRecords);
+            localStorage.setItem('golfScores', JSON.stringify(scores));
+            
+            closeModal('scoreModal');
+            selectedPlayers = [];
+            renderPlayerChips();
+            renderRecords();
+            renderStats();
+            renderLeaderboard();
+            
+            alert('成績已儲存！');
+        }
+        
+        // 刪除成績
+        function deleteScore(idx) {
+            if (!confirm('確定要刪除這筆記錄嗎？')) return;
+            scores.splice(idx, 1);
+            localStorage.setItem('golfScores', JSON.stringify(scores));
+            renderRecords();
+            renderStats();
+            renderLeaderboard();
+        }
+        
+        // 渲染歷史紀錄
+        function renderRecords() {
+            const container = document.getElementById('recordsList');
+            
+            if (scores.length === 0) {
+                container.innerHTML = '<div class="empty">還沒有任何成績記錄<br>快去記錄你的第一筆吧！</div>';
+                return;
+            }
+            
+            // 按日期分組
+            const grouped = {};
+            scores.forEach((s, idx) => {
+                const key = s.date;
+                if (!grouped[key]) grouped[key] = [];
+                grouped[key].push({ ...s, idx });
+            });
+            
+            container.innerHTML = Object.entries(grouped).sort((a,b) => b[0].localeCompare(a[0])).map(([date, records]) => `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color:#9ca3af;margin-bottom:8px;font-size:0.9rem;">📅 ${date}</h3>
+                    ${records.map(r => `
+                        <div class="score-item">
+                            <div class="score-info">
+                                <h3>${r.player}</h3>
+                                <p>⛳ ${r.course}</p>
+                            </div>
+                            <div class="score-value">
+                                <div class="score">${r.total}</div>
+                                <div class="date">桿</div>
+                                <button class="delete-btn" onclick="deleteScore(${r.idx})" style="margin-top:4px;">刪除</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+        
+        // 渲染統計
+        function renderStats() {
+            const container = document.getElementById('myStats');
+            
+            // 取得登錄者的統計
+            const myScores = scores.filter(s => s.player === '振興');
+            
+            if (myScores.length === 0) {
+                container.innerHTML = `
+                    <div class="stat-card">
+                        <div class="label">總場次</div>
+                        <div class="value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">平均桿數</div>
+                        <div class="value">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">最佳成績</div>
+                        <div class="value">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">總桿數</div>
+                        <div class="value">0</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const totals = myScores.map(s => s.total);
+            const avg = (totals.reduce((a,b) => a+b, 0) / totals.length).toFixed(1);
+            const best = Math.min(...totals);
+            const total = totals.reduce((a,b) => a+b, 0);
+            
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="label">總場次</div>
+                    <div class="value">${myScores.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">平均桿數</div>
+                    <div class="value">${avg}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">最佳成績</div>
+                    <div class="value">${best}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">總桿數</div>
+                    <div class="value">${total}</div>
+                </div>
+            `;
+        }
+        
+        // 渲染排行榜
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboard');
+            
+            // 計算每個人的平均桿數
+            const playerStats = {};
+            players.forEach(p => {
+                const playerScores = scores.filter(s => s.player === p);
+                if (playerScores.length > 0) {
+                    const totals = playerScores.map(s => s.total);
+                    playerStats[p] = {
+                        avg: (totals.reduce((a,b) => a+b, 0) / totals.length).toFixed(1),
+                        rounds: playerScores.length,
+                        best: Math.min(...totals)
+                    };
+                }
+            });
+            
+            // 排序
+            const sorted = Object.entries(playerStats)
+                .sort((a, b) => parseFloat(a[1].avg) - parseFloat(b[1].avg));
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<div class="empty">還沒有足夠的數據</div>';
+                return;
+            }
+            
+            container.innerHTML = sorted.map(([name, stats], idx) => {
+                let rankClass = '';
+                if (idx === 0) rankClass = 'gold';
+                else if (idx === 1) rankClass = 'silver';
+                else if (idx === 2) rankClass = 'bronze';
+                
+                return `
+                    <div class="leaderboard-item">
+                        <div class="rank ${rankClass}">${idx + 1}</div>
+                        <div class="leaderboard-info">
+                            <h4>${name}</h4>
+                            <p>${stats.rounds}場 · 最佳 ${stats.best}桿</p>
+                        </div>
+                        <div class="leaderboard-score">${stats.avg}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 關閉 Modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+        
+        // 點擊外部關閉
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        });
+        
+        // 啟動
+        init();
+    </script>
+</body>
+</html>

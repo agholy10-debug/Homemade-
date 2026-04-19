@@ -19,7 +19,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -27,7 +27,7 @@
         h1 {
             text-align: center;
             color: #4ade80;
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 10px;
         }
         
@@ -35,27 +35,28 @@
             text-align: center;
             color: #9ca3af;
             margin-bottom: 30px;
+            font-size: 0.9rem;
         }
         
         .card {
             background: rgba(255,255,255,0.1);
             border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
             backdrop-filter: blur(10px);
         }
         
         .card h2 {
             color: #4ade80;
             margin-bottom: 16px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         
         label {
@@ -137,18 +138,19 @@
         
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 16px;
         }
         
         .tab {
             flex: 1;
-            padding: 12px;
+            padding: 10px 8px;
             text-align: center;
             background: rgba(255,255,255,0.1);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 0.85rem;
         }
         
         .tab.active {
@@ -163,8 +165,8 @@
         .score-item {
             background: rgba(255,255,255,0.05);
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -173,11 +175,12 @@
         .score-info h3 {
             color: #fff;
             margin-bottom: 4px;
+            font-size: 1rem;
         }
         
         .score-info p {
             color: #9ca3af;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         
         .score-value {
@@ -185,63 +188,63 @@
         }
         
         .score-value .score {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
             color: #4ade80;
         }
         
         .score-value .date {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #9ca3af;
         }
         
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
         
         .stat-card {
             background: rgba(255,255,255,0.05);
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
             text-align: center;
         }
         
         .stat-card .label {
             color: #9ca3af;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
         }
         
         .stat-card .value {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: bold;
             color: #4ade80;
         }
         
         .stat-card .sub {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #9ca3af;
             margin-top: 4px;
         }
         
         .leaderboard {
-            margin-top: 20px;
+            margin-top: 16px;
         }
         
         .leaderboard-item {
             display: flex;
             align-items: center;
-            padding: 12px;
+            padding: 10px;
             background: rgba(255,255,255,0.05);
             border-radius: 8px;
             margin-bottom: 8px;
         }
         
         .rank {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             background: #4ade80;
             color: #1a1a2e;
             border-radius: 50%;
@@ -249,7 +252,8 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            margin-right: 12px;
+            margin-right: 10px;
+            font-size: 0.85rem;
         }
         
         .rank.gold { background: #fbbf24; }
@@ -262,22 +266,23 @@
         
         .leaderboard-info h4 {
             color: #fff;
+            font-size: 0.95rem;
         }
         
         .leaderboard-info p {
             color: #9ca3af;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         
         .leaderboard-score {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #4ade80;
         }
         
         .empty {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: #9ca3af;
         }
         
@@ -285,10 +290,10 @@
             background: rgba(239, 68, 68, 0.2);
             border: none;
             color: #ef4444;
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         
         .delete-btn:hover {
@@ -315,7 +320,7 @@
         .modal-content {
             background: #1a1a2e;
             border-radius: 16px;
-            padding: 24px;
+            padding: 20px;
             width: 90%;
             max-width: 400px;
         }
@@ -325,36 +330,28 @@
             margin-bottom: 16px;
         }
         
-        .holes-input {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            gap: 4px;
-            margin-top: 10px;
-        }
-        
-        .hole-input {
-            width: 100%;
-            padding: 8px 4px;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-        
-        .total-score {
-            text-align: center;
-            font-size: 1.5rem;
-            color: #4ade80;
-            margin: 16px 0;
-            padding: 12px;
-            background: rgba(74, 222, 128, 0.1);
+        .player-score-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
             border-radius: 8px;
         }
         
-        @media (max-width: 600px) {
+        .player-score-row .name {
+            flex: 1;
+            font-weight: bold;
+        }
+        
+        .player-score-row input {
+            width: 80px;
+            text-align: center;
+        }
+        
+        @media (max-width: 400px) {
             .stats-grid {
                 grid-template-columns: 1fr;
-            }
-            .holes-input {
-                grid-template-columns: repeat(5, 1fr);
             }
         }
     </style>
@@ -365,16 +362,16 @@
         <p class="subtitle">記錄每一次揮桿的精彩</p>
         
         <div class="tabs">
-            <div class="tab active" onclick="showTab('record')">📝 記錄成績</div>
-            <div class="tab" onclick="showTab('records')">📊 歷史紀錄</div>
-            <div class="tab" onclick="showTab('stats')">📈 統計數據</div>
+            <div class="tab active" onclick="showTab('record')">📝 記錄</div>
+            <div class="tab" onclick="showTab('records')">📊 紀錄</div>
+            <div class="tab" onclick="showTab('stats')">📈 統計</div>
             <div class="tab" onclick="showTab('players')">👥 球友</div>
         </div>
         
         <!-- 記錄成績 -->
         <div id="tab-record" class="tab-content">
             <div class="card">
-                <h2>📝 新增成績</h2>
+                <h2>📝 記錄成績</h2>
                 <div class="form-group">
                     <label>日期</label>
                     <input type="date" id="scoreDate">
@@ -388,7 +385,7 @@
                     <div class="player-chips" id="playerChips"></div>
                 </div>
                 <button class="btn btn-secondary" onclick="showAddPlayerModal()">➕ 新增球友</button>
-                <button class="btn btn-primary" onclick="showScoreModal()">📤 記錄成績</button>
+                <button class="btn btn-primary" onclick="showScoreModal()">📤 記錄總成績</button>
             </div>
         </div>
         
@@ -441,10 +438,9 @@
     <!-- 記錄成績 Modal -->
     <div class="modal" id="scoreModal">
         <div class="modal-content">
-            <h3>📤 記錄成績</h3>
+            <h3>📤 記錄總成績</h3>
             <p id="selectedPlayersText" style="color: #9ca3af; margin-bottom: 16px;"></p>
-            <div id="holesInputContainer"></div>
-            <div class="total-score">總桿數：<span id="totalScore">0</span></div>
+            <div id="playersScoreInput"></div>
             <div style="display: flex; gap: 10px; margin-top: 16px;">
                 <button class="btn btn-secondary" onclick="closeModal('scoreModal')" style="flex:1;">取消</button>
                 <button class="btn btn-primary" onclick="saveScore()" style="flex:1;">儲存</button>
@@ -533,6 +529,10 @@
         // 渲染球友名單
         function renderPlayersList() {
             const container = document.getElementById('playersList');
+            if (players.length === 0) {
+                container.innerHTML = '<div class="empty">還沒有球友，請新增！</div>';
+                return;
+            }
             container.innerHTML = players.map(p => `
                 <div class="score-item">
                     <div class="score-info">
@@ -556,47 +556,16 @@
                 `${date} @ ${course || '未知球場'}`;
             
             // 創建每個球友的成績輸入
-            const container = document.getElementById('holesInputContainer');
+            const container = document.getElementById('playersScoreInput');
             container.innerHTML = selectedPlayers.map(p => `
-                <div style="margin-bottom: 16px;">
-                    <label style="color: #4ade80;">${p}</label>
-                    <div class="holes-input">
-                        ${Array.from({length: 18}, (_, i) => `
-                            <div>
-                                <div style="font-size:0.7rem;color:#9ca3af;">${i+1}</div>
-                                <input type="number" class="hole-input" 
-                                       id="hole-${p}-${i}" min="1" max="20" value="4"
-                                       onchange="updateTotal('${p}')">
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div style="text-align:right;margin-top:4px;color:#4ade80;">
-                        小計：<span id="subtotal-${p}">72</span> 桿
-                    </div>
+                <div class="player-score-row">
+                    <span class="name">${p}</span>
+                    <input type="number" id="score-${p}" placeholder="總桿數" min="1" max="200">
+                    <span style="margin-left:8px;color:#9ca3af;">桿</span>
                 </div>
             `).join('');
             
             document.getElementById('scoreModal').classList.add('show');
-        }
-        
-        // 更新總桿數
-        function updateTotal(playerName) {
-            let total = 0;
-            for (let i = 0; i < 18; i++) {
-                const val = parseInt(document.getElementById(`hole-${playerName}-${i}`)?.value) || 0;
-                total += val;
-            }
-            document.getElementById(`subtotal-${playerName}`).textContent = total;
-            
-            // 更新全部總桿數
-            let grandTotal = 0;
-            selectedPlayers.forEach(p => {
-                for (let i = 0; i < 18; i++) {
-                    const val = parseInt(document.getElementById(`hole-${p}-${i}`)?.value) || 0;
-                    grandTotal += val;
-                }
-            });
-            document.getElementById('totalScore').textContent = grandTotal;
         }
         
         // 儲存成績
@@ -604,15 +573,18 @@
             const date = document.getElementById('scoreDate').value;
             const course = document.getElementById('courseName').value;
             
-            const scoreRecords = selectedPlayers.map(p => {
-                let holes = [];
-                let total = 0;
-                for (let i = 0; i < 18; i++) {
-                    const val = parseInt(document.getElementById(`hole-${p}-${i}`)?.value) || 0;
-                    holes.push(val);
-                    total += val;
+            // 檢查所有成績都已輸入
+            for (const p of selectedPlayers) {
+                const score = document.getElementById(`score-${p}`).value;
+                if (!score) {
+                    alert(`請輸入 ${p} 的總桿數`);
+                    return;
                 }
-                return { player: p, date, course: course || '未知球場', holes, total };
+            }
+            
+            const scoreRecords = selectedPlayers.map(p => {
+                const total = parseInt(document.getElementById(`score-${p}`).value);
+                return { player: p, date, course: course || '未知球場', total };
             });
             
             scores.push(...scoreRecords);
@@ -656,8 +628,8 @@
             });
             
             container.innerHTML = Object.entries(grouped).sort((a,b) => b[0].localeCompare(a[0])).map(([date, records]) => `
-                <div style="margin-bottom: 20px;">
-                    <h3 style="color:#9ca3af;margin-bottom:8px;font-size:0.9rem;">📅 ${date}</h3>
+                <div style="margin-bottom: 16px;">
+                    <h3 style="color:#9ca3af;margin-bottom:8px;font-size:0.85rem;">📅 ${date}</h3>
                     ${records.map(r => `
                         <div class="score-item">
                             <div class="score-info">

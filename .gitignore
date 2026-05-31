@@ -1,0 +1,7 @@
+node_modules/
+chores.json
+auto-backup.log
+*.bak
+*.test
+*.log
+
